@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "QuickOCR",
+  "version": "1.0.0",
+  "description": "Select any area on screen and extract text instantly using local OCR. Privacy-first: all processing happens on your device.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "clipboardWrite",
+    "contextMenus",
+    "offscreen"
+  ],
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "QuickOCR - Extract Text"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'",
+    "sandbox": "sandbox allow-scripts allow-forms allow-popups allow-modals; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; child-src 'self' blob:; worker-src 'self' blob:"
+  },
+  "sandbox": {
+    "pages": ["ocr-sandbox.html"]
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["tesseract/*", "ocr-sandbox.html"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "options_page": "settings.html"
+}
