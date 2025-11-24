@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OCR Selection Settings</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      background: #f5f5f5;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    
+    .setting-group {
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .setting-group:last-child {
+      border-bottom: none;
+    }
+    
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    
+    .description {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+    
+    select, input[type="number"] {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    
+    .warning {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 4px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #856404;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .btn-primary {
+      background: #007bff;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #0056b3;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+    
+    .btn-secondary:hover {
+      background: #545b62;
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #c82333;
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      animation: slideIn 0.3s, slideOut 0.3s 2.7s;
+      z-index: 1000;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(400px); }
+      to { transform: translateX(0); }
+    }
+    
+    @keyframes slideOut {
+      from { transform: translateX(0); }
+      to { transform: translateX(400px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>OCR Selection Settings</h1>
+    <p class="subtitle">Configure your OCR preferences</p>
+    
+    <div class="setting-group">
+      <label for="language">OCR Language</label>
+      <p class="description">Select the primary language for text recognition</p>
+      <select id="language">
+        <option value="eng">English</option>
+        <option value="spa">Spanish</option>
+        <option value="fra">French</option>
+        <option value="deu">German</option>
+        <option value="ita">Italian</option>
+        <option value="por">Portuguese</option>
+        <option value="rus">Russian</option>
+        <option value="chi_sim">Chinese (Simplified)</option>
+        <option value="chi_tra">Chinese (Traditional)</option>
+        <option value="jpn">Japanese</option>
+        <option value="kor">Korean</option>
+        <option value="ara">Arabic</option>
+        <option value="hin">Hindi</option>
+      </select>
+    </div>
+    
+    <div class="setting-group">
+      <label for="engineMode">Recognition Mode</label>
+      <p class="description">Balance between speed and accuracy</p>
+      <select id="engineMode">
+        <option value="fast">Fast (1-3 seconds, 85-95% accuracy)</option>
+        <option value="accurate">Accurate (3-8 seconds, 90-98% accuracy)</option>
+      </select>
+    </div>
+    
+    <div class="setting-group">
+      <label for="confidenceThreshold">Confidence Threshold (%)</label>
+      <p class="description">Minimum confidence level to accept OCR results</p>
+      <input type="number" id="confidenceThreshold" min="0" max="100" step="5" value="60">
+    </div>
+    
+    <div class="setting-group">
+      <label>Cloud OCR (Optional)</label>
+      <p class="description">Enable cloud processing for potentially higher accuracy</p>
+      <div class="checkbox-group">
+        <input type="checkbox" id="cloudOCREnabled">
+        <label for="cloudOCREnabled" style="margin: 0; font-weight: normal;">Enable cloud OCR</label>
+      </div>
+      <div class="warning" id="cloudWarning" style="display: none;">
+        ⚠️ <strong>Privacy Notice:</strong> Enabling cloud OCR will send selected images to an external server for processing. Images are immediately deleted after processing. By enabling this feature, you consent to this data transmission.
+      </div>
+    </div>
+    
+    <div class="button-group">
+      <button class="btn-primary" id="saveBtn">Save Settings</button>
+      <button class="btn-secondary" id="resetBtn">Reset to Defaults</button>
+      <button class="btn-danger" id="clearDataBtn">Clear All Data</button>
+    </div>
+  </div>
+  
+  <script src="settings.js"></script>
+</body>
+</html>
