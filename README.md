@@ -28,18 +28,12 @@ A Chrome extension that extracts text from screen selections using local OCR pro
    pnpm install
    ```
 
-3. Create icons:
-   ```bash
-   pnpm create-icons
-   ```
-   Then open `icons/create-icons.html` in a browser and save each canvas as PNG.
-
-4. Build the extension:
+3. Build the extension:
    ```bash
    pnpm build
    ```
 
-5. Load in Chrome:
+4. Load in Chrome:
    - Open `chrome://extensions/`
    - Enable "Developer mode"
    - Click "Load unpacked"
@@ -53,55 +47,57 @@ A Chrome extension that extracts text from screen selections using local OCR pro
 
 ### Basic Usage
 
-1. **Activate OCR Selection**:
-   - Click the extension icon in toolbar, OR
-   - Right-click on page and select "OCR Selection"
+1. **Activate QuickOCR**:
+   - Click the extension icon in the toolbar, OR
+   - Press `Alt+Shift+O`, OR
+   - Right-click the page and choose "QuickOCR: select an area to read"
 
-2. **Select Area**:
-   - Draw a rectangle around the text you want to extract
-   - Use mouse to drag and create selection
+2. **Select the area**:
+   - Drag a rectangle over the text you want to read
+   - Drag the handles to fine-tune it, or drag inside it to move it
 
-3. **Capture**:
-   - Click "Capture" button to process the selection
-   - Wait for OCR to complete (1-8 seconds depending on mode)
+3. **Read it**:
+   - Click "Read text", or press `Enter`
+   - The overlay takes itself off screen before the screenshot, so none of it can end up in the recognised image
+   - Recognition runs locally; progress is shown at the top of the page
 
-4. **Copy Text**:
-   - Click "Copy" to copy extracted text to clipboard
-   - Or manually select and copy from result window
-
-5. **Recapture** (if needed):
-   - Click "Recapture" to select a different area
-   - Adjust selection and try again
+4. **Copy it**:
+   - The text is copied to your clipboard as soon as it is recognised
+   - The result card is editable, so misread characters can be fixed and copied again
+   - "Download .txt" saves it, "Copy image" copies the crop, "Reselect" starts over
 
 ### Keyboard Shortcuts
 
-- `Esc` - Cancel selection and close overlay
-- Result window is draggable by clicking and dragging the header
+- `Esc` - step back: cancel a running job, close the result, clear the selection, close the overlay
+- `Enter` - read the current selection
+- Arrow keys - nudge the selection (Shift = 20px, Alt = 1px)
+- The result card is draggable by its header
+
+### Pages that cannot be used
+
+Chrome blocks extensions on pages such as `chrome://settings`, the Chrome Web Store and other extensions' pages. QuickOCR shows "N/A" on the toolbar badge there, and "!" when injection fails for any other reason.
 
 ## Settings
 
-Access settings by clicking the extension icon and selecting "Settings":
+Open the settings page from `chrome://extensions` (Details -> Extension options), or accept the page that opens on first install.
 
-### OCR Language
-Choose the language for text recognition:
-- English (default)
-- Spanish, French, German, Italian, Portuguese
-- Chinese (Simplified & Traditional), Japanese, Korean
-- Arabic, Hindi, Russian
-- 100+ more languages available
+### Document profile
+What kind of content you normally select: `Auto`, `Document`, `Screenshot`, `Handwriting` or `Code`. This chooses the page segmentation mode and the preprocessing route.
 
-### Engine Mode
-- **Fast**: Quicker processing (~1-3 seconds), good accuracy (85-95%)
-- **Accurate**: Slower processing (~3-8 seconds), higher accuracy (90-98%)
+### Layout preset
+How recognised lines are stitched together: `Balanced` (paragraphs), `Verbatim` (keeps columns and spacing - best for tables and code) or `Compact` (merges wrapped lines).
 
-### Confidence Threshold
-Set minimum confidence level (0-100%) for accepting OCR results.
+### OCR language
+English is built in and works offline out of the box. Any other language is downloaded once (2-15 MB), kept in your browser, and works offline afterwards.
 
-### Cloud OCR (Optional)
-- **Disabled by default** for privacy
-- Enable for potentially higher accuracy
-- Requires explicit consent
-- Images sent to server are immediately deleted after processing
+### Confidence threshold
+Results below this mean confidence are flagged in the result card (0-100, default 60).
+
+### Image preprocessing
+`Auto enhance` (upscales small text, inverts dark-mode captures), `Sharpen`, `Black & white` (adaptive threshold), `Grayscale` and `Contrast stretch`. The engine still tries several recipes and keeps the best result; these decide which ones are available.
+
+### Clearing data
+"Clear local data" deletes the settings and every downloaded language pack. The built-in English model stays.
 
 ## Permissions Explained
 
@@ -113,7 +109,9 @@ The extension requests minimal permissions:
 | `scripting` | Inject selection overlay when you activate OCR |
 | `storage` | Save your preferences (language, settings) |
 | `clipboardWrite` | Copy extracted text to clipboard |
-| `contextMenus` | Add "OCR Selection" to right-click menu |
+| `contextMenus` | Add "QuickOCR: select an area to read" to the right-click menu |
+| `offscreen` | Host the local OCR engine (WebAssembly + Web Worker) outside the page |
+| `tessdata.projectnaptha.com` (host) | Download an optional language pack when you ask for one |
 
 **We do NOT request**:
 - Access to all websites (`<all_urls>`)
@@ -136,15 +134,13 @@ By default, all OCR happens in your browser:
 - Works completely offline
 - No external API calls
 
-### Optional Cloud OCR
-If you enable cloud OCR (opt-in only):
-- Explicit consent required before any data is sent
-- Only selected image region is uploaded
-- Images are processed and immediately deleted
-- No retention of images or results
-- Can be disabled at any time
+### Language packs
+The only network request the extension can make is a language pack download, and only when you click "Download pack" in the settings:
+- Only the model file is fetched, from the pinned `tessdata.projectnaptha.com` source
+- No image, recognised text or page content is part of that request
+- English ships inside the extension, so English recognition never needs the network
 
-See [Privacy Policy](privacy_policy.md) for full details.
+See [Privacy Policy](privacy_policy.html) for full details.
 
 ## Troubleshooting
 
@@ -167,10 +163,13 @@ See [Privacy Policy](privacy_policy.md) for full details.
 - Check browser console for errors
 - Try rebuilding: `pnpm build`
 
-### Capture Button Not Appearing
-- Ensure you've drawn a rectangle (minimum 20x20 pixels)
-- Check that overlay is visible
-- Try refreshing the page and reactivating
+### The overlay does not appear
+- Chrome refuses injection on `chrome://` pages, the Chrome Web Store and other extensions' pages - the toolbar badge shows "N/A" there
+- Any other injection failure shows "!" on the badge
+- Otherwise check `chrome://extensions` -> QuickOCR -> Errors for details
+
+### "The window switched to another tab"
+- The screenshot has to be of the tab the selection was drawn in. Bring that tab back to the front and press "Read text" again
 
 ### Cannot Copy to Clipboard
 - Check clipboard permissions in Chrome settings
@@ -181,16 +180,19 @@ See [Privacy Policy](privacy_policy.md) for full details.
 
 ### Project Structure
 ```
-ocr-selection-ext/
+quickocr/
 ├── src/
-│   ├── service-worker.ts       # Background service worker
-│   └── content/
-│       └── selection.ts        # Content script with overlay UI
+│   ├── service-worker.ts       # Toolbar/context-menu/shortcut entry, capture, offscreen owner
+│   ├── offscreen.ts            # OCR host that owns the Tesseract worker
+│   ├── content/selection.ts    # Injected selection overlay and result card
+│   ├── settings/               # Options page
+│   └── lib/                    # engine, imaging, layout, language store, protocol, types
 ├── icons/                      # Extension icons
-├── scripts/                    # Build and utility scripts
-├── manifest.json              # Extension manifest (MV3)
-├── vite.config.ts            # Build configuration
-└── dist/                     # Built extension (generated)
+├── scripts/                    # Build, watch, pack and test scripts
+├── manifest.json               # Extension manifest (MV3)
+├── vite.config.ts              # Bundles service worker, offscreen host and settings page (ESM)
+├── vite.content.config.ts      # Bundles the content script as one classic-script IIFE
+└── dist/                       # Built extension (generated)
 ```
 
 ### Build Commands
@@ -199,27 +201,26 @@ ocr-selection-ext/
 # Install dependencies
 pnpm install
 
-# Create icon files
-pnpm create-icons
-
 # Build for production
 pnpm build
 
-# Build with watch mode (development)
+# Rebuild both bundles while you work
 pnpm dev
 
-# Run OCR accuracy tests
+# Run the OCR accuracy test
 pnpm test
 
-# Pack for Chrome Web Store
+# Zip dist/ for the Chrome Web Store
 pnpm pack
 ```
 
+`pnpm build` copies the static files and the Tesseract runtime into `dist/`. The English model is taken from `scripts/.cache/eng.traineddata.gz` when it is there, so an offline build works; otherwise it is downloaded once and cached in that folder.
+
 ### Testing
 
-1. Create `test-images/` folder
+1. Create a `test-images/` folder
 2. Add sample images with known text
-3. Update `scripts/test-ocr.js` with test cases
+3. List them in `scripts/test-ocr.js`
 4. Run: `pnpm test`
 
 ### Contributing

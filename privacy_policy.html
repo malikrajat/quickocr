@@ -100,7 +100,7 @@
 <body>
   <div class="container">
     <h1>Privacy Policy</h1>
-    <p class="last-updated"><strong>Last Updated:</strong> November 15, 2025</p>
+    <p class="last-updated"><strong>Last Updated:</strong> September 19, 2026</p>
 
     <h2>Overview</h2>
     <p>OCR Selection is a privacy-first Chrome extension that extracts text from screen selections using Optical Character Recognition (OCR). We are committed to protecting your privacy and ensuring transparency about data handling.</p>
@@ -123,19 +123,19 @@
     <h3>What We Store Locally</h3>
     <p>The extension stores minimal data in Chrome's local storage:</p>
     <ul>
-      <li><strong>User Settings:</strong> OCR language preference, engine mode (fast/accurate), confidence threshold</li>
+      <li><strong>User Settings:</strong> language preference, document profile, layout preset, confidence threshold, image preprocessing toggles</li>
+      <li><strong>Language Packs:</strong> if you download a language other than English, that model file is kept in your browser's local database so recognition stays offline</li>
       <li><strong>No Images:</strong> We do NOT store captured images by default</li>
       <li><strong>No OCR Results:</strong> Text extraction results are not persisted</li>
     </ul>
 
-    <h3>Optional Cloud OCR (Opt-In Only)</h3>
-    <p>If you explicitly enable cloud OCR for higher accuracy:</p>
+    <h3>The Only Network Request</h3>
+    <p>The extension never uploads a capture. The single optional network request is a language pack download, started only when you click "Download pack" on the settings page:</p>
     <ul>
-      <li>You will see a consent dialog explaining what data is sent</li>
-      <li>Only the selected image region is uploaded (not full screen)</li>
-      <li>Images are processed and immediately deleted</li>
-      <li>No images are retained after processing</li>
-      <li>You can disable this feature at any time</li>
+      <li>Only the model file (about 2-15 MB) is fetched, from the pinned <code>tessdata.projectnaptha.com</code> source</li>
+      <li>No image, no recognised text and no page content is ever sent - the request does not contain any of your data</li>
+      <li>English ships inside the extension and needs no download</li>
+      <li>Once a language pack is downloaded, recognition is fully offline</li>
     </ul>
 
     <h2>Permissions Explained</h2>
@@ -146,6 +146,8 @@
       <li><strong>storage:</strong> To save your preferences (language, settings)</li>
       <li><strong>clipboardWrite:</strong> To copy extracted text to clipboard</li>
       <li><strong>contextMenus:</strong> To add "OCR Selection" to right-click menu</li>
+      <li><strong>offscreen:</strong> To run the local OCR engine (WebAssembly and Web Workers) outside the page</li>
+      <li><strong>tessdata.projectnaptha.com (host permission):</strong> Only for the optional language pack download</li>
     </ul>
 
     <p><strong>We do NOT request:</strong></p>
@@ -153,7 +155,7 @@
       <li>Access to all websites</li>
       <li>Access to browsing history</li>
       <li>Access to personal data</li>
-      <li>Network access (unless cloud OCR is enabled)</li>
+      <li>Any server that receives your images or text - nothing you capture ever leaves your device</li>
     </ul>
 
     <h2>Third-Party Services</h2>
@@ -165,7 +167,7 @@
 
     <h2>Data Retention</h2>
     <ul>
-      <li>Settings are stored until you uninstall the extension</li>
+      <li>Settings and downloaded language packs are stored until you clear them in the settings page or uninstall the extension</li>
       <li>No images or OCR results are retained</li>
       <li>You can clear all data via extension settings</li>
     </ul>
@@ -173,9 +175,9 @@
     <h2>Your Rights</h2>
     <p>You have the right to:</p>
     <ul>
-      <li>Use the extension entirely offline (default mode)</li>
+      <li>Use the extension entirely offline (English recognition needs no network at all)</li>
       <li>Delete all stored data at any time</li>
-      <li>Opt out of cloud OCR (it's opt-in only)</li>
+      <li>Decide per language whether to download a pack</li>
       <li>Request information about data practices</li>
     </ul>
 
