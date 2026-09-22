@@ -1,17 +1,18 @@
 {
   "name": "quickocr",
-  "version": "1.0.0",
+  "version": "1.1.3",
   "description": "Select any area on screen and extract text instantly using local OCR. Privacy-first: all processing happens on your device.",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build && node scripts/post-build.js",
-    "dev": "vite build --watch",
-    "pack": "node scripts/pack.js"
+    "build": "vite build --emptyOutDir && vite build --config vite.content.config.ts && vite build --config vite.offscreen.config.ts && node scripts/post-build.js",
+    "dev": "node scripts/dev.js",
+    "pack": "node scripts/pack.js",
+    "test": "node scripts/test-ocr.js"
   },
   "keywords": [
     "chrome-extension",
-    "ocr",
+    "ocr", 
     "optical-character-recognition",
     "text-extraction",
     "text-recognition",
@@ -43,7 +44,6 @@
   },
   "packageManager": "pnpm@10.11.1",
   "dependencies": {
-    "localforage": "^1.10.0",
     "tesseract.js": "5.1.1"
   },
   "devDependencies": {

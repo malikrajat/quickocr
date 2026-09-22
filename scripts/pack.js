@@ -1,23 +1,31 @@
-// Pack extension for Chrome Web Store
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+// Pack the built extension for the Chrome Web Store.
 
-const distDir = path.join(__dirname, '../dist');
-const outputZip = path.join(__dirname, '../ocr-selection-ext.zip');
+import { execFileSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-if (!fs.existsSync(distDir)) {
-  console.error('Error: dist/ folder not found. Run "pnpm build" first.');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const distDir = join(root, 'dist');
+const outputZip = join(root, 'quickocr.zip');
+
+if (!existsSync(join(distDir, 'manifest.json'))) {
+  console.error('Error: no built extension found. Run "pnpm build" first.');
   process.exit(1);
 }
 
 try {
-  // Use PowerShell to create zip on Windows
-  const command = `Compress-Archive -Path "${distDir}\\*" -DestinationPath "${outputZip}" -Force`;
-  execSync(command, { shell: 'powershell.exe' });
+  execFileSync(
+    'powershell.exe',
+    [
+      '-NoProfile',
+      '-Command',
+      `Compress-Archive -Path '${distDir}\\*' -DestinationPath '${outputZip}' -Force`,
+    ],
+    { stdio: 'inherit' },
+  );
   console.log(`Extension packed: ${outputZip}`);
-  console.log('Ready for Chrome Web Store upload!');
 } catch (error) {
-  console.error('Failed to create zip:', error.message);
+  console.error('Failed to create zip:', error instanceof Error ? error.message : error);
   process.exit(1);
 }

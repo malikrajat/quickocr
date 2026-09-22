@@ -1,7 +1,15 @@
-// Test OCR accuracy with sample images
-const { createWorker } = require('tesseract.js');
-const fs = require('fs');
-const path = require('path');
+// Test OCR accuracy with sample images. Run with: node scripts/test-ocr.js
+//
+// The English model is loaded from scripts/.cache when a build has downloaded
+// it, so the test can run without a network connection.
+
+import { existsSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createWorker } from 'tesseract.js';
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const langDir = join(root, 'scripts', '.cache');
 
 const testCases = [
   {
@@ -14,15 +22,18 @@ const testCases = [
 
 async function runTests() {
   console.log('Starting OCR accuracy tests...\n');
-  
-  const worker = await createWorker('eng');
+
+  const options = existsSync(join(langDir, 'eng.traineddata.gz'))
+    ? { langPath: langDir, gzip: true, cacheMethod: 'none' }
+    : {};
+  const worker = await createWorker('eng', undefined, options);
   let totalTests = 0;
   let passedTests = 0;
 
   for (const testCase of testCases) {
-    const imagePath = path.join(__dirname, '..', testCase.imagePath);
+    const imagePath = join(root, testCase.imagePath);
     
-    if (!fs.existsSync(imagePath)) {
+    if (!existsSync(imagePath)) {
       console.log(`⚠️  Skipping ${testCase.name}: Image not found`);
       continue;
     }
