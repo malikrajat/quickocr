@@ -1,0 +1,118 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, format and types
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (Biome)
+        run: pnpm lint
+
+      - name: Formatting (Biome)
+        run: pnpm format:check
+
+      - name: Types (tsc)
+        run: pnpm typecheck
+
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Unit tests
+        run: pnpm test
+
+  build:
+    name: Build, verify and package
+    runs-on: ubuntu-latest
+    needs: [quality, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build the extension (bundles, static files, Web Store check)
+        run: pnpm build
+
+      - name: Verify the built folder
+        run: pnpm verify:dist
+
+      - name: OCR engine smoke test
+        run: pnpm test:ocr
+
+      - name: Package for the Chrome Web Store
+        run: pnpm zip
+
+      - name: Upload the extension folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: quickocr-dist
+          path: dist/
+          if-no-files-found: error
+
+      - name: Upload the store archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: quickocr-zip
+          path: quickocr.zip
+          if-no-files-found: error
+
+      - name: Upload the store listing assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: quickocr-store-assets
+          path: store/
+          if-no-files-found: error

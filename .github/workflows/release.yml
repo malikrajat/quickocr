@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish the release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check the tag matches the manifest version
+        run: |
+          MANIFEST_VERSION="$(node -p "require('./manifest.json').version")"
+          if [ "${GITHUB_REF_NAME}" != "v${MANIFEST_VERSION}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match manifest version ${MANIFEST_VERSION}" >&2
+            exit 1
+          fi
+
+      - name: Lint and typecheck
+        run: |
+          pnpm lint
+          pnpm format:check
+          pnpm typecheck
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build and verify
+        run: |
+          pnpm build
+          pnpm verify:dist
+
+      - name: Package
+        run: pnpm zip
+
+      - name: Publish the GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: quickocr.zip
+          generate_release_notes: true
+          body: |
+            Chrome Web Store archive for QuickOCR ${{ github.ref_name }}.
+
+            Install for development: unzip, then chrome://extensions -> Developer mode -> Load unpacked.
+            The listing copy and assets are in `docs/store-listing.md` and `store/`.
