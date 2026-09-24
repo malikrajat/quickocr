@@ -1,18 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy - OCR Selection Extension</title>
-  <style>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - OCR Selection Extension</title>
+    <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       line-height: 1.6;
       color: #333;
       max-width: 800px;
@@ -20,26 +20,26 @@
       padding: 40px 20px;
       background: #f5f5f5;
     }
-    
+
     .container {
       background: white;
       padding: 40px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
-    
+
     h1 {
       color: #007bff;
       margin-bottom: 10px;
       font-size: 32px;
     }
-    
+
     .last-updated {
       color: #666;
       font-size: 14px;
       margin-bottom: 30px;
     }
-    
+
     h2 {
       color: #333;
       margin-top: 30px;
@@ -48,167 +48,195 @@
       border-bottom: 2px solid #007bff;
       padding-bottom: 5px;
     }
-    
+
     h3 {
       color: #555;
       margin-top: 20px;
       margin-bottom: 10px;
       font-size: 18px;
     }
-    
+
     p {
       margin-bottom: 15px;
     }
-    
+
     ul {
       margin-left: 20px;
       margin-bottom: 15px;
     }
-    
+
     li {
       margin-bottom: 8px;
     }
-    
+
     strong {
       color: #007bff;
     }
-    
+
     .highlight {
       background: #fff3cd;
       padding: 15px;
       border-left: 4px solid #ffc107;
       margin: 20px 0;
     }
-    
+
     .contact {
       background: #e7f3ff;
       padding: 20px;
       border-radius: 4px;
       margin-top: 30px;
     }
-    
+
     a {
       color: #007bff;
       text-decoration: none;
     }
-    
+
     a:hover {
       text-decoration: underline;
     }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Privacy Policy</h1>
-    <p class="last-updated"><strong>Last Updated:</strong> September 19, 2026</p>
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Privacy Policy</h1>
+      <p class="last-updated"><strong>Last Updated:</strong> September 19, 2026</p>
 
-    <h2>Overview</h2>
-    <p>OCR Selection is a privacy-first Chrome extension that extracts text from screen selections using Optical Character Recognition (OCR). We are committed to protecting your privacy and ensuring transparency about data handling.</p>
+      <h2>Overview</h2>
+      <p>
+        OCR Selection is a privacy-first Chrome extension that extracts text from screen selections using Optical
+        Character Recognition (OCR). We are committed to protecting your privacy and ensuring transparency about data
+        handling.
+      </p>
 
-    <div class="highlight">
-      <strong>Privacy-First Promise:</strong> By default, all OCR processing happens locally on your device. No images or text are sent to external servers. No tracking or analytics.
-    </div>
+      <div class="highlight">
+        <strong>Privacy-First Promise:</strong>
+        By default, all OCR processing happens locally on your device. No images or text are sent to external servers.
+        No tracking or analytics.
+      </div>
 
-    <h2>Data Collection and Processing</h2>
+      <h2>Data Collection and Processing</h2>
 
-    <h3>Local Processing (Default)</h3>
-    <p>By default, <strong>all OCR processing happens locally on your device</strong>:</p>
-    <ul>
-      <li>Screen captures are processed entirely in your browser using WebAssembly (Tesseract.js)</li>
-      <li>No images or text are sent to external servers</li>
-      <li>No data leaves your device</li>
-      <li>No tracking or analytics</li>
-    </ul>
-
-    <h3>What We Store Locally</h3>
-    <p>The extension stores minimal data in Chrome's local storage:</p>
-    <ul>
-      <li><strong>User Settings:</strong> language preference, document profile, layout preset, confidence threshold, image preprocessing toggles</li>
-      <li><strong>Language Packs:</strong> if you download a language other than English, that model file is kept in your browser's local database so recognition stays offline</li>
-      <li><strong>No Images:</strong> We do NOT store captured images by default</li>
-      <li><strong>No OCR Results:</strong> Text extraction results are not persisted</li>
-    </ul>
-
-    <h3>The Only Network Request</h3>
-    <p>The extension never uploads a capture. The single optional network request is a language pack download, started only when you click "Download pack" on the settings page:</p>
-    <ul>
-      <li>Only the model file (about 2-15 MB) is fetched, from the pinned <code>tessdata.projectnaptha.com</code> source</li>
-      <li>No image, no recognised text and no page content is ever sent - the request does not contain any of your data</li>
-      <li>English ships inside the extension and needs no download</li>
-      <li>Once a language pack is downloaded, recognition is fully offline</li>
-    </ul>
-
-    <h2>Permissions Explained</h2>
-    <p>The extension requests these permissions:</p>
-    <ul>
-      <li><strong>activeTab:</strong> To capture the visible browser tab when you make a selection</li>
-      <li><strong>scripting:</strong> To inject the selection overlay when you activate OCR</li>
-      <li><strong>storage:</strong> To save your preferences (language, settings)</li>
-      <li><strong>clipboardWrite:</strong> To copy extracted text to clipboard</li>
-      <li><strong>contextMenus:</strong> To add "OCR Selection" to right-click menu</li>
-      <li><strong>offscreen:</strong> To run the local OCR engine (WebAssembly and Web Workers) outside the page</li>
-      <li><strong>tessdata.projectnaptha.com (host permission):</strong> Only for the optional language pack download</li>
-    </ul>
-
-    <p><strong>We do NOT request:</strong></p>
-    <ul>
-      <li>Access to all websites</li>
-      <li>Access to browsing history</li>
-      <li>Access to personal data</li>
-      <li>Any server that receives your images or text - nothing you capture ever leaves your device</li>
-    </ul>
-
-    <h2>Third-Party Services</h2>
-    <ul>
-      <li><strong>Tesseract.js:</strong> Open-source OCR engine running locally in your browser</li>
-      <li><strong>No Analytics:</strong> We do not use Google Analytics or any tracking services</li>
-      <li><strong>No Ads:</strong> This extension is ad-free</li>
-    </ul>
-
-    <h2>Data Retention</h2>
-    <ul>
-      <li>Settings and downloaded language packs are stored until you clear them in the settings page or uninstall the extension</li>
-      <li>No images or OCR results are retained</li>
-      <li>You can clear all data via extension settings</li>
-    </ul>
-
-    <h2>Your Rights</h2>
-    <p>You have the right to:</p>
-    <ul>
-      <li>Use the extension entirely offline (English recognition needs no network at all)</li>
-      <li>Delete all stored data at any time</li>
-      <li>Decide per language whether to download a pack</li>
-      <li>Request information about data practices</li>
-    </ul>
-
-    <h2>Security</h2>
-    <ul>
-      <li>Content Security Policy enforced on all extension pages</li>
-      <li>No remote code execution</li>
-      <li>All OCR output sanitized before display</li>
-      <li>Secure message passing between components</li>
-    </ul>
-
-    <h2>Changes to This Policy</h2>
-    <p>We will notify users of any material changes to this privacy policy through the extension update notes.</p>
-
-    <h2>Compliance</h2>
-    <p>This extension complies with:</p>
-    <ul>
-      <li>Chrome Web Store Developer Program Policies</li>
-      <li>GDPR (General Data Protection Regulation)</li>
-      <li>CCPA (California Consumer Privacy Act)</li>
-    </ul>
-
-    <div class="contact">
-      <h2>Contact</h2>
-      <p>For privacy concerns or questions:</p>
+      <h3>Local Processing (Default)</h3>
+      <p>By default, <strong>all OCR processing happens locally on your device</strong>:</p>
       <ul>
-        <li><strong>Email:</strong> <a href="mailto:privacy@example.com">privacy@example.com</a></li>
-        <li><strong>GitHub:</strong> <a href="https://github.com/yourusername/ocr-selection-ext">GitHub Repository</a></li>
+        <li>Screen captures are processed entirely in your browser using WebAssembly (Tesseract.js)</li>
+        <li>No images or text are sent to external servers</li>
+        <li>No data leaves your device</li>
+        <li>No tracking or analytics</li>
       </ul>
-      <p><em>Note: Update these contact details before publishing</em></p>
+
+      <h3>What We Store Locally</h3>
+      <p>The extension stores minimal data in Chrome's local storage:</p>
+      <ul>
+        <li>
+          <strong>User Settings:</strong>
+          language preference, document profile, layout preset, confidence threshold, image preprocessing toggles
+        </li>
+        <li>
+          <strong>Language Packs:</strong>
+          if you download a language other than English, that model file is kept in your browser's local database so
+          recognition stays offline
+        </li>
+        <li><strong>No Images:</strong> We do NOT store captured images by default</li>
+        <li><strong>No OCR Results:</strong> Text extraction results are not persisted</li>
+      </ul>
+
+      <h3>The Only Network Request</h3>
+      <p>
+        The extension never uploads a capture. The single optional network request is a language pack download, started
+        only when you click "Download pack" on the settings page:
+      </p>
+      <ul>
+        <li>
+          Only the model file (about 2-15 MB) is fetched, from the pinned <code>tessdata.projectnaptha.com</code> source
+        </li>
+        <li>
+          No image, no recognised text and no page content is ever sent - the request does not contain any of your data
+        </li>
+        <li>English ships inside the extension and needs no download</li>
+        <li>Once a language pack is downloaded, recognition is fully offline</li>
+      </ul>
+
+      <h2>Permissions Explained</h2>
+      <p>The extension requests these permissions:</p>
+      <ul>
+        <li><strong>activeTab:</strong> To capture the visible browser tab when you make a selection</li>
+        <li><strong>scripting:</strong> To inject the selection overlay when you activate OCR</li>
+        <li><strong>storage:</strong> To save your preferences (language, settings)</li>
+        <li><strong>clipboardWrite:</strong> To copy extracted text to clipboard</li>
+        <li><strong>contextMenus:</strong> To add "OCR Selection" to right-click menu</li>
+        <li><strong>offscreen:</strong> To run the local OCR engine (WebAssembly and Web Workers) outside the page</li>
+        <li>
+          <strong>tessdata.projectnaptha.com (host permission):</strong>
+          Only for the optional language pack download
+        </li>
+      </ul>
+
+      <p><strong>We do NOT request:</strong></p>
+      <ul>
+        <li>Access to all websites</li>
+        <li>Access to browsing history</li>
+        <li>Access to personal data</li>
+        <li>Any server that receives your images or text - nothing you capture ever leaves your device</li>
+      </ul>
+
+      <h2>Third-Party Services</h2>
+      <ul>
+        <li><strong>Tesseract.js:</strong> Open-source OCR engine running locally in your browser</li>
+        <li><strong>No Analytics:</strong> We do not use Google Analytics or any tracking services</li>
+        <li><strong>No Ads:</strong> This extension is ad-free</li>
+      </ul>
+
+      <h2>Data Retention</h2>
+      <ul>
+        <li>
+          Settings and downloaded language packs are stored until you clear them in the settings page or uninstall the
+          extension
+        </li>
+        <li>No images or OCR results are retained</li>
+        <li>You can clear all data via extension settings</li>
+      </ul>
+
+      <h2>Your Rights</h2>
+      <p>You have the right to:</p>
+      <ul>
+        <li>Use the extension entirely offline (English recognition needs no network at all)</li>
+        <li>Delete all stored data at any time</li>
+        <li>Decide per language whether to download a pack</li>
+        <li>Request information about data practices</li>
+      </ul>
+
+      <h2>Security</h2>
+      <ul>
+        <li>Content Security Policy enforced on all extension pages</li>
+        <li>No remote code execution</li>
+        <li>All OCR output sanitized before display</li>
+        <li>Secure message passing between components</li>
+      </ul>
+
+      <h2>Changes to This Policy</h2>
+      <p>We will notify users of any material changes to this privacy policy through the extension update notes.</p>
+
+      <h2>Compliance</h2>
+      <p>This extension complies with:</p>
+      <ul>
+        <li>Chrome Web Store Developer Program Policies</li>
+        <li>GDPR (General Data Protection Regulation)</li>
+        <li>CCPA (California Consumer Privacy Act)</li>
+      </ul>
+
+      <div class="contact">
+        <h2>Contact</h2>
+        <p>For privacy concerns or questions:</p>
+        <ul>
+          <li><strong>Email:</strong> <a href="mailto:privacy@example.com">privacy@example.com</a></li>
+          <li>
+            <strong>GitHub:</strong> <a href="https://github.com/yourusername/ocr-selection-ext">GitHub Repository</a>
+          </li>
+        </ul>
+        <p><em>Note: Update these contact details before publishing</em></p>
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>

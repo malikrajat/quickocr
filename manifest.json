@@ -1,20 +1,13 @@
 {
   "manifest_version": 3,
   "name": "QuickOCR - Select Area & Extract Text Offline",
+  "short_name": "QuickOCR",
   "version": "1.1.3",
   "description": "Select any area on screen and copy the text instantly. Fully offline OCR - no uploads, no accounts, no tracking.",
   "minimum_chrome_version": "116",
-  "permissions": [
-    "activeTab",
-    "scripting",
-    "storage",
-    "clipboardWrite",
-    "contextMenus",
-    "offscreen"
-  ],
-  "host_permissions": [
-    "https://tessdata.projectnaptha.com/*"
-  ],
+  "homepage_url": "https://github.com/malikrajat/quickocr",
+  "permissions": ["activeTab", "scripting", "storage", "clipboardWrite", "contextMenus", "offscreen"],
+  "host_permissions": ["https://tessdata.projectnaptha.com/*"],
   "background": {
     "service_worker": "service-worker.js",
     "type": "module"
@@ -22,6 +15,7 @@
   "action": {
     "default_icon": {
       "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     },
@@ -29,6 +23,7 @@
   },
   "icons": {
     "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
@@ -40,8 +35,12 @@
       "description": "Start an OCR area selection"
     }
   },
+  "incognito": "not_allowed",
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   },
-  "options_page": "settings.html"
+  "options_ui": {
+    "page": "settings.html",
+    "open_in_tab": true
+  }
 }

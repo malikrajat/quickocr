@@ -1,17 +1,30 @@
-# OCR Selection - Privacy-First Text Capture Extension
+# QuickOCR - select an area, copy the text (offline OCR for Chrome)
 
-A Chrome extension that extracts text from screen selections using local OCR processing. Privacy-first design with all processing happening on your device.
+[![CI](https://github.com/malikrajat/quickocr/actions/workflows/ci.yml/badge.svg)](https://github.com/malikrajat/quickocr/actions/workflows/ci.yml)
+[![Release](https://github.com/malikrajat/quickocr/actions/workflows/release.yml/badge.svg)](https://github.com/malikrajat/quickocr/actions/workflows/release.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+QuickOCR turns any part of your screen into editable text: click the toolbar icon
+(or press `Alt+Shift+O`), drag a box over the text you want, and press **Read
+text**. The recognised text appears in a card and is copied to your clipboard.
+Recognition runs entirely on your device, so screen OCR, screenshot-to-text,
+image-to-text and scanned-document reading all work without uploading anything.
+
+Search terms this project answers to: screen OCR, screenshot to text, copy text
+from screen, image to text, picture/photo to text, PDF and scanned document
+text, receipt OCR, handwriting OCR, offline/on-device OCR, privacy-first text
+scanner, Manifest V3 Chrome extension.
 
 ## Features
 
-- 🔒 **Privacy-First**: All OCR processing happens locally using WebAssembly
-- 🎯 **Simple Interface**: Drag to select any screen area
-- 🌍 **100+ Languages**: Support for multiple languages
-- ⚡ **Fast & Accurate**: Choose between speed and accuracy
-- 📋 **One-Click Copy**: Copy extracted text to clipboard instantly
-- ⌨️ **Keyboard Shortcuts**: Esc to cancel, intuitive controls
-- 🎨 **Draggable UI**: Move result window anywhere on screen
-- 📊 **Confidence Scores**: See OCR accuracy for each extraction
+- 🔒 **Private by design**: all OCR happens locally with WebAssembly - no uploads, no accounts, no tracking
+- 🎯 **Select any area**: drag a box over a screenshot, video frame, PDF page, image or scanned document
+- 📋 **Copies automatically**: the recognised text is on your clipboard as soon as it is read
+- ✏️ **Editable result**: fix a misread character and copy again, download a `.txt`, or copy the crop
+- 🌍 **100+ languages**: English is built in and offline; other packs are one download (2-15 MB)
+- 🎛️ **Profiles and layout presets**: document, screenshot, handwriting or code; balanced, verbatim or compact
+- 📊 **Confidence score**: every result shows its mean confidence and flags ones worth reviewing
+- ⌨️ **Keyboard and context menu**: `Alt+Shift+O`, Enter to read, arrow keys to nudge, right-click entry
 
 ## Installation
 
@@ -19,8 +32,8 @@ A Chrome extension that extracts text from screen selections using local OCR pro
 
 1. Clone this repository:
    ```bash
-   git clone [repository-url]
-   cd ocr-selection-ext
+   git clone https://github.com/malikrajat/quickocr
+   cd quickocr
    ```
 
 2. Install dependencies:
@@ -42,6 +55,23 @@ A Chrome extension that extracts text from screen selections using local OCR pro
 ### From Chrome Web Store
 
 [Coming soon - link to Chrome Web Store]
+
+### Publishing to the Chrome Web Store
+
+The package is store-ready: `pnpm build` finishes with a readiness check that
+verifies the manifest against the keys Chrome accepts, the name/description
+length limits the dashboard enforces, the required icon sizes, every file the
+manifest points at, and the "no remote code" rule.
+
+```bash
+pnpm check    # the same check on its own
+pnpm verify:dist   # every runtime file, module format and import in dist/
+pnpm zip      # writes quickocr.zip from dist/
+```
+
+The listing copy, keyword sets, permission justifications and asset checklist
+live in [docs/store-listing.md](docs/store-listing.md); the promo tile and the
+1280x800 screenshots are in `store/`.
 
 ## Usage
 
@@ -188,40 +218,65 @@ quickocr/
 │   ├── settings/               # Options page
 │   └── lib/                    # engine, imaging, layout, language store, protocol, types
 ├── icons/                      # Extension icons
-├── scripts/                    # Build, watch, pack and test scripts
+├── store/                      # Chrome Web Store assets (promo tile, screenshots, icon)
+├── docs/                       # store-listing.md: copy, keywords, checklist
+├── tests/                      # Unit tests (node:test, no runner dependency)
+├── scripts/                    # Build, watch, verify, zip and test scripts
+├── .github/workflows/          # CI (lint, types, tests, build, verify, artifacts) and release
 ├── manifest.json               # Extension manifest (MV3)
+├── biome.json                  # Linter + formatter configuration
 ├── vite.config.ts              # Bundles service worker, offscreen host and settings page (ESM)
 ├── vite.content.config.ts      # Bundles the content script as one classic-script IIFE
+├── vite.offscreen.config.ts    # Bundles the OCR host as one classic-script IIFE
 └── dist/                       # Built extension (generated)
 ```
 
-### Build Commands
+### Commands
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Build for production
-pnpm build
-
-# Rebuild both bundles while you work
-pnpm dev
-
-# Run the OCR accuracy test
-pnpm test
-
-# Zip dist/ for the Chrome Web Store
-pnpm pack
+pnpm install        # install dependencies (Node 24+)
+pnpm dev            # rebuild both bundles while you work
+pnpm lint           # Biome: lint + import order
+pnpm lint:fix       # Biome: apply the safe fixes
+pnpm format         # Biome: format every supported file
+pnpm format:check   # Biome: fail if a file is not formatted
+pnpm typecheck      # tsc --noEmit (strict, plus unused-symbol checks in CI)
+pnpm test           # unit tests (29 tests across types, protocol, layout, imaging, manifest)
+pnpm test:ocr       # OCR engine smoke test against the packaged model
+pnpm build          # bundles + static files into dist/, then the Web Store check
+pnpm build:dist     # pnpm build plus a full verification of dist/
+pnpm check          # Web Store readiness check on its own
+pnpm verify:dist    # every runtime file, module format and import in dist/
+pnpm zip            # quickocr.zip for the Chrome Web Store
 ```
 
 `pnpm build` copies the static files and the Tesseract runtime into `dist/`. The English model is taken from `scripts/.cache/eng.traineddata.gz` when it is there, so an offline build works; otherwise it is downloaded once and cached in that folder.
 
+Node 24 or newer is required: the unit tests import the TypeScript sources directly, which uses Node's built-in type stripping instead of a test framework or transpiler.
+
 ### Testing
 
-1. Create a `test-images/` folder
-2. Add sample images with known text
-3. List them in `scripts/test-ocr.js`
-4. Run: `pnpm test`
+`pnpm test` runs the unit suite with `node:test` - no Jest, Vitest or ts-node:
+
+* `tests/types.test.mjs` - settings normalisation: defaults, clamping, invalid enums
+* `tests/protocol.test.mjs` - message/target uniqueness and the full capture -> recognise flow
+* `tests/layout.test.mjs` - paragraph and wrapped-line reconstruction, de-hyphenation, verbatim mode, confidence clamping, acronym repair and its guard rails
+* `tests/imaging.test.mjs` - quality analysis, inversion detection, preprocessing variants, pixel budget, blob encoding (with a small canvas stand-in)
+* `tests/manifest.test.mjs` - MV3 shape, store text limits, icon sizes, minimal permissions, CSP, remote-code check
+
+For the OCR engine itself: create a `test-images/` folder, add images with known text, list them in `scripts/test-ocr.js`, then run `pnpm test:ocr`.
+
+### Continuous integration
+
+`.github/workflows/ci.yml` runs on every push and pull request:
+
+| Job | Steps |
+| --- | --- |
+| `quality` | install -> `pnpm lint` -> `pnpm format:check` -> `pnpm typecheck` |
+| `test` | install -> `pnpm test` (29 unit tests) |
+| `build` | install -> `pnpm build` (bundles + Web Store check) -> `pnpm verify:dist` -> `pnpm test:ocr` -> `pnpm zip`, then uploads `dist/`, the ZIP and the store assets as artifacts |
+
+`.github/workflows/release.yml` runs on a `v*` tag, refuses to build when the tag does not match the manifest version, runs the same checks, and publishes `quickocr.zip` as a GitHub release.
 
 ### Contributing
 
