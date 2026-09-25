@@ -1,7 +1,7 @@
 // Generate screenshot templates for Chrome Web Store
 const sharp = require('sharp');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const screenshotsDir = path.join(__dirname, '../screenshots');
 
@@ -62,7 +62,7 @@ async function generateTemplates() {
   // Generate screenshot templates
   for (const screenshot of screenshots) {
     const outputPath = path.join(screenshotsDir, `${screenshot.name}.png`);
-    
+
     // Create a template with text overlay
     const svg = `
       <svg width="${screenshot.width}" height="${screenshot.height}">
@@ -79,10 +79,8 @@ async function generateTemplates() {
     `;
 
     try {
-      await sharp(Buffer.from(svg))
-        .png()
-        .toFile(outputPath);
-      
+      await sharp(Buffer.from(svg)).png().toFile(outputPath);
+
       console.log(`✓ Created ${screenshot.name}.png`);
     } catch (error) {
       console.error(`✗ Failed to create ${screenshot.name}:`, error.message);
@@ -94,7 +92,7 @@ async function generateTemplates() {
   // Generate promotional image templates
   for (const promo of promoImages) {
     const outputPath = path.join(screenshotsDir, `promo-${promo.name}.png`);
-    
+
     const svg = `
       <svg width="${promo.width}" height="${promo.height}">
         <defs>
@@ -116,10 +114,8 @@ async function generateTemplates() {
     `;
 
     try {
-      await sharp(Buffer.from(svg))
-        .png()
-        .toFile(outputPath);
-      
+      await sharp(Buffer.from(svg)).png().toFile(outputPath);
+
       console.log(`✓ Created promo-${promo.name}.png (${promo.width}x${promo.height})`);
     } catch (error) {
       console.error(`✗ Failed to create promo-${promo.name}:`, error.message);

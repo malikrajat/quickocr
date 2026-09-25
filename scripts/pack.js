@@ -1,4 +1,7 @@
 // Pack the built extension for the Chrome Web Store.
+//
+// Exposed as `pnpm zip`, not `pnpm pack`: the latter is a built-in pnpm command
+// that creates an npm tarball instead of the Web Store archive.
 
 import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -17,11 +20,7 @@ if (!existsSync(join(distDir, 'manifest.json'))) {
 try {
   execFileSync(
     'powershell.exe',
-    [
-      '-NoProfile',
-      '-Command',
-      `Compress-Archive -Path '${distDir}\\*' -DestinationPath '${outputZip}' -Force`,
-    ],
+    ['-NoProfile', '-Command', `Compress-Archive -Path '${distDir}\\*' -DestinationPath '${outputZip}' -Force`],
     { stdio: 'inherit' },
   );
   console.log(`Extension packed: ${outputZip}`);

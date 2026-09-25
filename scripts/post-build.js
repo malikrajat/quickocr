@@ -55,7 +55,7 @@ copy(join(root, 'privacy_policy.html'), join(dist, 'privacy_policy.html'));
 copy(join(root, 'src', 'settings', 'settings.html'), join(dist, 'settings.html'));
 copy(join(root, 'src', 'offscreen.html'), join(dist, 'offscreen.html'));
 
-for (const icon of ['icon16.png', 'icon48.png', 'icon128.png']) {
+for (const icon of ['icon16.png', 'icon32.png', 'icon48.png', 'icon128.png']) {
   copy(join(root, 'icons', icon), join(dist, 'icons', icon));
 }
 
@@ -69,10 +69,7 @@ copy(
   join(coreDir, 'tesseract-core-simd-lstm.wasm.js'),
   join(dist, 'tesseract', 'core', 'tesseract-core-simd-lstm.wasm.js'),
 );
-copy(
-  join(coreDir, 'tesseract-core-simd-lstm.wasm'),
-  join(dist, 'tesseract', 'core', 'tesseract-core-simd-lstm.wasm'),
-);
+copy(join(coreDir, 'tesseract-core-simd-lstm.wasm'), join(dist, 'tesseract', 'core', 'tesseract-core-simd-lstm.wasm'));
 copy(join(coreDir, 'LICENSE'), join(dist, 'tesseract', 'core', 'LICENSE'));
 
 await ensureLanguageModel();
