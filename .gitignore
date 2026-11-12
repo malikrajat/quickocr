@@ -7,6 +7,12 @@ dist/
 *.zip
 *.tgz
 
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
 # Logs
 *.log
 npm-debug.log*
@@ -15,6 +21,7 @@ pnpm-debug.log*
 # Editor
 .vscode/
 .idea/
+.kilo/
 *.swp
 *.swo
 *~
@@ -22,9 +29,6 @@ pnpm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
-
-# Test images (optional - remove if you want to commit test images)
-test-images/
 
 # Environment
 .env
