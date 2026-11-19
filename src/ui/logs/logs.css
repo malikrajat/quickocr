@@ -1,0 +1,120 @@
+.logs-shell {
+  max-width: 1180px;
+  padding-bottom: 18px;
+}
+
+.logs-stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.stat-value-sm {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.logs-actions {
+  align-items: center;
+}
+
+.export-group {
+  display: inline-flex;
+  align-items: stretch;
+}
+
+.export-group .select {
+  width: auto;
+  min-width: 82px;
+  min-height: 34px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: 0;
+}
+
+.export-group .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.result-count {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.load-more-row {
+  padding: 2px 0;
+}
+
+.load-more-row #shown-count {
+  margin-left: auto;
+}
+
+.footer-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.email-preview {
+  max-height: 260px;
+}
+
+.preview-payload {
+  max-height: 420px;
+}
+
+#preview-endpoint {
+  display: block;
+  padding: 8px 10px;
+  overflow-wrap: anywhere;
+}
+
+.logs-page .notice {
+  margin: 0;
+}
+
+.logs-page .log-body {
+  padding-left: 70px;
+}
+
+.logs-page .log-head {
+  cursor: pointer;
+}
+
+.logs-page .log-entry .details {
+  margin-bottom: 0;
+}
+
+@media (max-width: 760px) {
+  .logs-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .result-count {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .logs-actions .btn,
+  .logs-actions .export-group {
+    flex: 1 1 auto;
+  }
+
+  .export-group .select {
+    flex: 1 1 70px;
+  }
+
+  .logs-page .log-body {
+    padding-left: 12px;
+  }
+
+  .logs-shell .app-header {
+    align-items: flex-start;
+  }
+
+  .logs-shell .header-actions {
+    justify-content: flex-end;
+  }
+}

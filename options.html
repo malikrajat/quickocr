@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Log Lens - settings</title>
+  </head>
+  <body class="options-page">
+    <main class="app-shell options-shell">
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div class="brand-text">
+            <h1>Log Lens settings</h1>
+            <p>Capture, privacy, delivery and the public API</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <span id="mode-pill" class="pill">Local only</span>
+          <button id="view-logs" class="btn btn-ghost btn-sm" type="button">View logs</button>
+        </div>
+      </header>
+
+      <div id="welcome" class="notice" hidden>
+        <strong>Welcome to Log Lens.</strong>
+        Error and unhandled-rejection capture is already on. Page errors, network failures and auto-send are opt-in and
+        off by default.
+      </div>
+
+      <form id="settings-form" class="options-form" novalidate>
+        <section class="card" aria-labelledby="capture-title">
+          <div class="card-header">
+            <div>
+              <div id="capture-title" class="card-title">Capture</div>
+              <div class="card-subtitle">
+                Only failures are stored by default. Nothing is captured from page content.
+              </div>
+            </div>
+            <span class="pill ok">Redaction on</span>
+          </div>
+          <div class="card-body stack">
+            <fieldset class="level-fieldset">
+              <legend class="field-label">Levels to store</legend>
+              <div class="level-grid">
+                <label class="check"
+                  ><input type="checkbox" name="levels" value="debug">
+                  <span class="check-text"><strong>Debug</strong></span></label
+                >
+                <label class="check"
+                  ><input type="checkbox" name="levels" value="info">
+                  <span class="check-text"><strong>Info</strong></span></label
+                >
+                <label class="check"
+                  ><input type="checkbox" name="levels" value="warn">
+                  <span class="check-text"><strong>Warn</strong></span></label
+                >
+                <label class="check"
+                  ><input type="checkbox" name="levels" value="error">
+                  <span class="check-text"><strong>Error</strong></span></label
+                >
+                <label class="check"
+                  ><input type="checkbox" name="levels" value="fatal">
+                  <span class="check-text"><strong>Fatal</strong></span></label
+                >
+              </div>
+            </fieldset>
+
+            <div class="check-grid">
+              <label class="check">
+                <input id="capture-extension" type="checkbox">
+                <span class="check-text">
+                  <strong>Extension errors</strong>
+                  <span>Errors thrown in Log Lens pages and its service worker.</span>
+                </span>
+              </label>
+              <label class="check">
+                <input id="capture-rejections" type="checkbox">
+                <span class="check-text">
+                  <strong>Unhandled rejections</strong>
+                  <span>Promises that reject without a catch handler.</span>
+                </span>
+              </label>
+              <label class="check">
+                <input id="capture-page" type="checkbox">
+                <span class="check-text">
+                  <strong>Page errors <span class="opt-tag">opt-in</span></strong>
+                  <span>Uncaught script errors on http(s) pages. Does not read the DOM.</span>
+                </span>
+              </label>
+              <label class="check">
+                <input id="capture-network" type="checkbox">
+                <span class="check-text">
+                  <strong>Network failures <span class="opt-tag">opt-in</span></strong>
+                  <span>Only method, URL without query, status and duration.</span>
+                </span>
+              </label>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label" for="network-status">Network failure threshold</label>
+                <input id="network-status" class="input" type="number" min="400" max="599" step="1">
+                <span class="hint">HTTP responses at or above this status are treated as failures (400-599).</span>
+              </div>
+              <div class="field">
+                <span class="field-label">Site access for page capture</span>
+                <div id="page-permission-status" class="permission-row">
+                  <span id="page-permission-text" class="hint">Not requested yet.</span>
+                  <button id="grant-page-access" class="btn btn-sm" type="button">Grant site access</button>
+                  <button id="remove-page-access" class="btn btn-sm btn-ghost" type="button" hidden>Remove</button>
+                </div>
+                <span class="hint"
+                  >Required only for page errors and network failures. Granting it never reads page content. Reload open
+                  tabs after granting.</span
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="storage-title">
+          <div class="card-header">
+            <div>
+              <div id="storage-title" class="card-title">Ring buffer</div>
+              <div class="card-subtitle">
+                New entries replace the oldest ones. A byte budget keeps chrome.storage.local healthy.
+              </div>
+            </div>
+            <span id="usage-text" class="pill">--</span>
+          </div>
+          <div class="card-body stack">
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label" for="max-entries">Maximum entries</label>
+                <input id="max-entries" class="input" type="number" min="50" max="2000" step="50">
+                <span class="hint">50-2000. Default: 500.</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="retention-days">Retention window (days)</label>
+                <input id="retention-days" class="input" type="number" min="1" max="30" step="1">
+                <span class="hint">1-30 days. Older entries are pruned automatically.</span>
+              </div>
+            </div>
+            <div>
+              <div class="usage-track" aria-hidden="true"><div id="usage-bar" class="usage-fill"></div></div>
+              <div class="row between small muted">
+                <span>Storage used by Log Lens</span>
+                <button id="clear-logs" class="btn btn-sm btn-danger" type="button">Clear logs</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="interface-title">
+          <div class="card-header">
+            <div>
+              <div id="interface-title" class="card-title">Interface</div>
+              <div class="card-subtitle">
+                Auto-open prefers the side panel and falls back to a tab when Chrome needs a gesture.
+              </div>
+            </div>
+          </div>
+          <div class="card-body stack">
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label" for="auto-open">Open the log viewer</label>
+                <select id="auto-open" class="select">
+                  <option value="never">Never</option>
+                  <option value="on-error">On error</option>
+                  <option value="always">Always</option>
+                </select>
+                <span class="hint">Automatic opens are rate-limited so an error storm cannot spam you.</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="email-recipient">Default email recipient</label>
+                <input id="email-recipient" class="input" type="email" placeholder="you@example.com">
+                <span class="hint"
+                  >Used as a convenience when you click Email logs. Log Lens never sends email itself.</span
+                >
+              </div>
+            </div>
+            <div class="check-grid">
+              <label class="check">
+                <input id="notify-on-error" type="checkbox">
+                <span class="check-text"
+                  ><strong>Notifications</strong><span>Show a desktop notification for captured errors.</span></span
+                >
+              </label>
+              <label class="check">
+                <input id="show-badge" type="checkbox">
+                <span class="check-text"
+                  ><strong>Badge count</strong><span>Show the error/fatal count on the toolbar icon.</span></span
+                >
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="autosend-title">
+          <div class="card-header">
+            <div>
+              <div id="autosend-title" class="card-title">Auto-send</div>
+              <div class="card-subtitle">Off by default. No log data leaves this browser until you enable it.</div>
+            </div>
+            <span id="autosend-pill" class="pill">Disabled</span>
+          </div>
+          <div class="card-body stack">
+            <div class="notice warn">
+              <strong>Explicit opt-in.</strong>
+              When enabled, redacted log entries are POSTed to your HTTPS endpoint. Log Lens adds no cookies, auth
+              headers, request bodies or analytics.
+            </div>
+
+            <label class="check">
+              <input id="autosend-enabled" type="checkbox">
+              <span class="check-text">
+                <strong>Enable auto-send</strong>
+                <span>Send on every captured error, or on a schedule you choose.</span>
+              </span>
+            </label>
+
+            <fieldset id="autosend-fields" class="autosend-fields stack">
+              <div class="field-row">
+                <div class="field">
+                  <label class="field-label" for="autosend-endpoint">HTTPS endpoint</label>
+                  <input id="autosend-endpoint" class="input" type="url" placeholder="https://logs.example.com/ingest">
+                  <span class="hint">Must be HTTPS. The endpoint receives <code>loglens/v1</code> JSON.</span>
+                </div>
+                <div class="field">
+                  <span class="field-label">Endpoint permission</span>
+                  <div class="permission-row">
+                    <span id="endpoint-permission-text" class="hint">Enter an endpoint first.</span>
+                    <button id="grant-endpoint" class="btn btn-sm" type="button">Approve endpoint</button>
+                  </div>
+                  <span class="hint">Chrome requires host permission before the service worker may POST.</span>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label class="field-label" for="autosend-mode">Delivery</label>
+                  <select id="autosend-mode" class="select">
+                    <option value="immediate">Immediately on error</option>
+                    <option value="scheduled">On a schedule</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="autosend-interval">Schedule interval (minutes)</label>
+                  <input id="autosend-interval" class="input" type="number" min="5" max="1440" step="1">
+                  <span class="hint">5-1440 minutes. Used by scheduled delivery.</span>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label class="field-label" for="autosend-level">Minimum level to send</label>
+                  <select id="autosend-level" class="select">
+                    <option value="debug">Debug</option>
+                    <option value="info">Info</option>
+                    <option value="warn">Warn</option>
+                    <option value="error">Error</option>
+                    <option value="fatal">Fatal</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="autosend-batch">Entries per request</label>
+                  <input id="autosend-batch" class="input" type="number" min="1" max="200" step="1">
+                  <span class="hint">1-200 entries per POST.</span>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label class="field-label" for="autosend-retries">Retries after failure</label>
+                  <input id="autosend-retries" class="input" type="number" min="0" max="5" step="1">
+                  <span class="hint">0-5 retries with exponential backoff.</span>
+                </div>
+                <div class="field">
+                  <label class="field-label" for="autosend-delay">Base retry delay (seconds)</label>
+                  <input id="autosend-delay" class="input" type="number" min="5" max="300" step="5">
+                  <span class="hint">5-300 seconds. The delay doubles per retry, capped at 15 minutes.</span>
+                </div>
+              </div>
+
+              <label class="check consent">
+                <input id="autosend-consent" type="checkbox">
+                <span class="check-text">
+                  <strong>I understand redacted logs will leave this browser</strong>
+                  <span>Required to save auto-send as enabled. You can turn it off at any time.</span>
+                </span>
+              </label>
+
+              <div class="row">
+                <button id="preview-send" class="btn" type="button">Preview payload (dry run)</button>
+                <button id="send-now" class="btn" type="button">Send pending now</button>
+                <span id="send-status" class="hint"></span>
+              </div>
+            </fieldset>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="api-title">
+          <div class="card-header">
+            <div>
+              <div id="api-title" class="card-title">Public API</div>
+              <div class="card-subtitle">Other extensions and approved HTTPS origins can add redacted entries.</div>
+            </div>
+          </div>
+          <div class="card-body stack">
+            <label class="check">
+              <input id="allow-all-extensions" type="checkbox">
+              <span class="check-text">
+                <strong>Allow all installed extensions</strong>
+                <span>Web origins still require explicit approval. Prefer the id allowlist below.</span>
+              </span>
+            </label>
+            <div class="field-row">
+              <div class="field">
+                <label class="field-label" for="approved-extensions">Approved extension IDs</label>
+                <textarea
+                  id="approved-extensions"
+                  class="textarea"
+                  rows="4"
+                  spellcheck="false"
+                  placeholder="abcdefghijklmnopabcdefghijklmnop"
+                ></textarea>
+                <span class="hint">One 32-character extension ID per line.</span>
+              </div>
+              <div class="field">
+                <label class="field-label" for="approved-origins">Approved web origins</label>
+                <textarea
+                  id="approved-origins"
+                  class="textarea"
+                  rows="4"
+                  spellcheck="false"
+                  placeholder="https://app.example.com"
+                ></textarea>
+                <span class="hint">One origin per line. HTTPS only; localhost HTTP is allowed for development.</span>
+              </div>
+            </div>
+            <div class="field">
+              <span class="field-label">How another extension calls it</span>
+              <pre
+                class="code-block"
+                id="api-example"
+              >await chrome.runtime.sendMessage('&lt;log-lens-extension-id&gt;', {
+  type: 'loglens.log',
+  level: 'error',
+  message: 'Checkout failed',
+  details: error.stack,
+  context: { route: '/checkout', status: 500 }
+});</pre>
+            </div>
+            <div class="notice">
+              <strong>No page data.</strong>
+              The API rejects unapproved senders, rate-limits to 60 entries per minute and applies the same redaction as
+              automatic capture.
+            </div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="privacy-title">
+          <div class="card-header">
+            <div>
+              <div id="privacy-title" class="card-title">Privacy &amp; data</div>
+              <div class="card-subtitle">No analytics. No telemetry. No remote code.</div>
+            </div>
+          </div>
+          <div class="card-body stack">
+            <p class="hint">
+              Log Lens redacts bearer headers, tokens, API keys, passwords, session ids, cookies and URL credentials
+              before storage, export, email or sending. It never captures cookies, form data, request headers, request
+              bodies or page content. Screenshots and exports are downloaded locally.
+            </p>
+            <div class="row">
+              <a id="privacy-link" class="btn btn-sm" href="#" target="_blank" rel="noreferrer">Read privacy policy</a>
+              <button id="reset-settings" class="btn btn-sm" type="button">Reset all settings</button>
+              <span class="hint">Resetting keeps captured logs; use Clear logs above to remove them.</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="save-bar">
+          <span id="save-status" class="hint">Settings loaded.</span>
+          <span class="save-bar-spacer"></span>
+          <button id="reset-button" class="btn" type="button">Reset form</button>
+          <button id="save-button" class="btn btn-primary" type="submit">Save settings</button>
+        </div>
+      </form>
+
+      <footer class="app-footer">
+        <span>Log Lens v1.1.0 &middot; no analytics</span>
+        <a id="footer-privacy" href="#" target="_blank" rel="noreferrer">Privacy policy</a>
+      </footer>
+    </main>
+
+    <dialog id="preview-dialog" aria-labelledby="preview-title">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <h2 id="preview-title">Auto-send dry run</h2>
+            <p id="preview-subtitle" class="hint">Uses saved settings. Nothing is sent from a preview.</p>
+          </div>
+          <button id="preview-close" class="btn btn-ghost btn-icon" type="button" aria-label="Close">&#10005;</button>
+        </div>
+        <div class="modal-body stack">
+          <div class="notice warn">
+            <strong>Dry run only.</strong>
+            This is exactly the redacted JSON payload that would be POSTed to your endpoint.
+          </div>
+          <div class="field">
+            <span class="field-label">Endpoint</span>
+            <code id="preview-endpoint">Not configured</code>
+          </div>
+          <pre id="preview-payload" class="code-block preview-payload"></pre>
+        </div>
+        <div class="modal-actions">
+          <button id="preview-copy" class="btn" type="button">Copy payload</button>
+          <button id="preview-download" class="btn" type="button">Download JSON</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="clear-dialog" aria-labelledby="clear-title">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <h2 id="clear-title">Clear every log?</h2>
+            <p class="hint">The ring buffer and any pending auto-send batches are deleted. Settings stay in place.</p>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="clear-cancel" class="btn" type="button">Cancel</button>
+          <button id="clear-confirm" class="btn btn-danger" type="button">Clear logs</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="reset-dialog" aria-labelledby="reset-title">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <h2 id="reset-title">Reset all settings?</h2>
+            <p class="hint">
+              Capture returns to errors and fatal only. Page capture, auto-send and the public API are disabled.
+            </p>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="reset-cancel" class="btn" type="button">Cancel</button>
+          <button id="reset-confirm" class="btn btn-danger" type="button">Reset settings</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script type="module" src="/src/ui/options/main.ts"></script>
+  </body>
+</html>

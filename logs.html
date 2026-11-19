@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Log Lens - log viewer</title>
+  </head>
+  <body class="logs-page">
+    <main id="log-shell" class="app-shell logs-shell">
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div class="brand-text">
+            <h1>Log Lens <span id="live-pill" class="pill ok">Live</span></h1>
+            <p id="status-line">Loading captured logs...</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <span id="send-pill" class="pill">Auto-send off</span>
+          <button id="options-button" class="btn btn-ghost btn-sm" type="button">Settings</button>
+          <button id="refresh-button" class="btn btn-ghost btn-icon" type="button" title="Refresh" aria-label="Refresh">
+            &#8635;
+          </button>
+        </div>
+      </header>
+
+      <section class="stat-grid logs-stats" aria-label="Log summary">
+        <div class="stat">
+          <div id="stat-errors" class="stat-value danger">0</div>
+          <div class="stat-label">Error + fatal</div>
+        </div>
+        <div class="stat">
+          <div id="stat-warnings" class="stat-value warn">0</div>
+          <div class="stat-label">Warnings</div>
+        </div>
+        <div class="stat">
+          <div id="stat-total" class="stat-value">0</div>
+          <div class="stat-label">In buffer</div>
+        </div>
+        <div class="stat">
+          <div id="stat-last" class="stat-value stat-value-sm">-</div>
+          <div class="stat-label">Last failure</div>
+        </div>
+      </section>
+
+      <section class="toolbar" aria-label="Search and filters">
+        <div class="search">
+          <label class="visually-hidden" for="search-input">Search logs</label>
+          <input
+            id="search-input"
+            class="input"
+            type="search"
+            placeholder="Search message, stack, status, URL..."
+            autocomplete="off"
+          >
+        </div>
+        <label class="visually-hidden" for="level-filter">Filter by level</label>
+        <select id="level-filter" class="select" aria-label="Filter by level">
+          <option value="all">All levels</option>
+          <option value="error">Errors</option>
+          <option value="fatal">Fatal</option>
+          <option value="warn">Warnings</option>
+          <option value="info">Info</option>
+          <option value="debug">Debug</option>
+        </select>
+        <label class="visually-hidden" for="source-filter">Filter by source</label>
+        <select id="source-filter" class="select" aria-label="Filter by source">
+          <option value="all">All sources</option>
+          <option value="extension">Extension</option>
+          <option value="page">Page</option>
+          <option value="network">Network</option>
+          <option value="api">Public API</option>
+          <option value="system">System</option>
+          <option value="manual">Manual</option>
+        </select>
+        <label class="visually-hidden" for="time-filter">Time range</label>
+        <select id="time-filter" class="select" aria-label="Time range">
+          <option value="all">All time</option>
+          <option value="15m">Last 15 minutes</option>
+          <option value="1h">Last hour</option>
+          <option value="6h">Last 6 hours</option>
+          <option value="24h">Last 24 hours</option>
+          <option value="7d">Last 7 days</option>
+        </select>
+        <button id="reset-filters" class="btn btn-ghost btn-sm" type="button">Reset</button>
+      </section>
+
+      <section class="action-bar logs-actions" aria-label="Log actions">
+        <button id="email-logs" class="btn" type="button">Email logs</button>
+        <div class="export-group">
+          <label class="visually-hidden" for="export-format">Export format</label>
+          <select id="export-format" class="select" aria-label="Export format">
+            <option value="json">JSON</option>
+            <option value="csv">CSV</option>
+            <option value="txt">Text</option>
+          </select>
+          <button id="export-logs" class="btn" type="button">Export logs</button>
+        </div>
+        <button id="capture-panel" class="btn" type="button">Capture panel</button>
+        <button id="capture-page" class="btn" type="button">Capture page</button>
+        <button id="copy-all" class="btn" type="button">Copy all</button>
+        <button id="preview-send" class="btn" type="button">Preview auto-send</button>
+        <button id="clear-logs" class="btn btn-danger" type="button">Clear logs</button>
+        <span id="result-count" class="result-count"></span>
+      </section>
+
+      <div id="send-alert" class="notice warn" role="status" hidden></div>
+      <div id="permission-alert" class="notice" role="status" hidden></div>
+
+      <section id="log-list" class="log-list" aria-label="Captured logs" aria-live="polite"></section>
+
+      <div id="empty-state" class="empty-state" hidden>
+        <div class="empty-icon" aria-hidden="true">&#9678;</div>
+        <strong id="empty-title">No logs captured yet</strong>
+        <span id="empty-text">Log Lens captures extension errors and unhandled rejections by default.</span>
+      </div>
+
+      <div class="row between load-more-row">
+        <button id="load-more" class="btn btn-ghost" type="button" hidden>Show more</button>
+        <span id="shown-count" class="hint"></span>
+      </div>
+
+      <footer class="app-footer">
+        <span>v1.1.0 &middot; Redaction active &middot; no analytics</span>
+        <span class="footer-links">
+          <a id="privacy-link" href="#" target="_blank" rel="noreferrer">Privacy</a>
+          <span>&middot;</span>
+          <span>Shortcut <span class="kbd">Alt</span>+<span class="kbd">Shift</span>+<span class="kbd">L</span></span>
+        </span>
+      </footer>
+    </main>
+
+    <dialog id="clear-dialog" aria-labelledby="clear-title">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <h2 id="clear-title">Clear every log?</h2>
+            <p class="hint">The ring buffer and any pending auto-send batches are deleted. Settings stay in place.</p>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="clear-cancel" class="btn" type="button">Cancel</button>
+          <button id="clear-confirm" class="btn btn-danger" type="button">Clear logs</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="email-dialog" aria-labelledby="email-title">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <h2 id="email-title">Email logs</h2>
+            <p class="hint">Opens your mail app with a redacted digest. Log Lens never sends email itself.</p>
+          </div>
+          <button id="email-close" class="btn btn-ghost btn-icon" type="button" aria-label="Close">&#10005;</button>
+        </div>
+        <div class="modal-body stack">
+          <div class="field">
+            <label class="field-label" for="email-recipient">Recipient</label>
+            <input id="email-recipient" class="input" type="email" placeholder="you@example.com" autocomplete="email">
+            <span id="email-hint" class="hint">Leave blank to choose the recipient in your mail app.</span>
+          </div>
+          <div class="field">
+            <label class="field-label" for="email-preview">Preview</label>
+            <pre id="email-preview" class="code-block email-preview"></pre>
+          </div>
+          <div class="notice warn">
+            <strong>Redaction is already applied.</strong>
+            The digest omits cookies, form data, request headers, request bodies and page content.
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="email-copy" class="btn" type="button">Copy body</button>
+          <button id="email-open" class="btn btn-primary" type="button">Open email app</button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="preview-dialog" aria-labelledby="preview-title">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <h2 id="preview-title">Auto-send dry run</h2>
+            <p id="preview-subtitle" class="hint">Nothing will be sent from this preview.</p>
+          </div>
+          <button id="preview-close" class="btn btn-ghost btn-icon" type="button" aria-label="Close">&#10005;</button>
+        </div>
+        <div class="modal-body stack">
+          <div id="preview-notice" class="notice warn">
+            <strong>Dry run only.</strong>
+            This is exactly the redacted payload that would be POSTed when auto-send is enabled.
+          </div>
+          <div class="field">
+            <span class="field-label">Endpoint</span>
+            <code id="preview-endpoint">Not configured</code>
+          </div>
+          <pre id="preview-payload" class="code-block preview-payload"></pre>
+        </div>
+        <div class="modal-actions">
+          <button id="preview-copy" class="btn" type="button">Copy payload</button>
+          <button id="preview-download" class="btn" type="button">Download JSON</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script type="module" src="/src/ui/logs/main.ts"></script>
+  </body>
+</html>

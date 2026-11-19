@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Log Lens</title>
+  </head>
+  <body class="popup-page">
+    <main class="app-shell popup-shell">
+      <header class="app-header">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div class="brand-text">
+            <h1>Log Lens</h1>
+            <p id="status-line">Loading captured logs...</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <span id="send-pill" class="pill">Auto-send off</span>
+          <button
+            id="options-button"
+            class="btn btn-ghost btn-icon"
+            type="button"
+            title="Open settings"
+            aria-label="Open settings"
+          >
+            &#9881;
+          </button>
+        </div>
+      </header>
+
+      <section class="stat-grid" aria-label="Log summary">
+        <div class="stat">
+          <div id="stat-errors" class="stat-value danger">0</div>
+          <div class="stat-label">Error + fatal</div>
+        </div>
+        <div class="stat">
+          <div id="stat-warnings" class="stat-value warn">0</div>
+          <div class="stat-label">Warnings</div>
+        </div>
+        <div class="stat">
+          <div id="stat-total" class="stat-value">0</div>
+          <div class="stat-label">In buffer</div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="latest-title">
+        <div class="card-header">
+          <div>
+            <div id="latest-title" class="card-title">Latest failures</div>
+            <div id="latest-subtitle" class="card-subtitle">Nothing captured yet.</div>
+          </div>
+          <button id="refresh-button" class="btn btn-ghost btn-icon" type="button" title="Refresh" aria-label="Refresh">
+            &#8635;
+          </button>
+        </div>
+        <div class="card-body">
+          <div id="latest-list" class="popup-list"></div>
+          <div id="empty-state" class="popup-empty" hidden>
+            <strong>No failures captured</strong>
+            <span>Log Lens is watching for extension errors and unhandled rejections.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stack popup-actions">
+        <div class="row">
+          <button id="open-viewer" class="btn btn-primary grow" type="button">Open log viewer</button>
+          <button id="open-page" class="btn" type="button">Full page</button>
+        </div>
+        <div class="action-bar">
+          <button id="capture-page" class="btn btn-sm" type="button">Capture page</button>
+          <button id="export-json" class="btn btn-sm" type="button">Export JSON</button>
+          <button id="email-logs" class="btn btn-sm" type="button">Email logs</button>
+          <button id="clear-logs" class="btn btn-sm btn-danger" type="button">Clear</button>
+        </div>
+      </section>
+
+      <footer class="app-footer">
+        <span>v1.1.0 &middot; Redaction active</span>
+        <a id="privacy-link" href="#" target="_blank" rel="noreferrer">Privacy</a>
+      </footer>
+    </main>
+
+    <dialog id="clear-dialog" aria-labelledby="clear-title">
+      <div class="modal">
+        <div class="modal-header">
+          <div>
+            <h2 id="clear-title">Clear every log?</h2>
+            <p class="hint">The ring buffer and any pending auto-send batches are deleted. Settings stay in place.</p>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button id="clear-cancel" class="btn" type="button">Cancel</button>
+          <button id="clear-confirm" class="btn btn-danger" type="button">Clear logs</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script type="module" src="/src/ui/popup/main.ts"></script>
+  </body>
+</html>
